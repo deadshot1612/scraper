@@ -1,2 +1,4 @@
 /venv/
-__pycache___
+__pycache__
+*.xlsx
+.env
