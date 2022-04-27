@@ -7,4 +7,5 @@ services:
       - .env
     volumes:
       - ./:/app
+
     command: ["python", "main.py"]

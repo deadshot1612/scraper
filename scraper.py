@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-from config import bot
+from config import bot, BASE_DIR
 
 import pandas as pd
 
@@ -72,11 +72,10 @@ class Scraper:
                 page += 1
                 
             else:
-                self.driver.quit()
-                try:
+
                     df = pd.DataFrame({'Название заведения': name, 'Юридическое название,': licen_name,'Контактные номера': contacts, 'Адрес': addresses, "Режим работы": work_hours})
 
-                    writer = pd.ExcelWriter(f'media/{self.name}.xlsx', engine='xlsxwriter')
+                    writer = pd.ExcelWriter(f'{BASE_DIR}/{self.name}.xlsx', engine='xlsxwriter')
 
                     df.to_excel(writer, sheet_name='Page1')
 
@@ -85,10 +84,7 @@ class Scraper:
                         col_idx = df.columns.get_loc(column)
                         writer.sheets['Page1'].set_column(col_idx, col_idx, column_length)
                     writer.save()
-                    with open(f'media/{self.name}.xlsx', 'rb') as f:
+                    with open(f'{BASE_DIR}/{self.name}.xlsx', 'rb') as f:
                         bot.send_document(self.id, f)
-                    
-                except:
-                    bot.send_message(self.id, "Something wrong, your link is correct?")
-
-                break
+                    self.driver.quit()    
+                    break
