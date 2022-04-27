@@ -72,10 +72,10 @@ class Scraper:
                 page += 1
                 
             else:
-
+                try:
                     df = pd.DataFrame({'Название заведения': name, 'Юридическое название,': licen_name,'Контактные номера': contacts, 'Адрес': addresses, "Режим работы": work_hours})
 
-                    writer = pd.ExcelWriter(f'{BASE_DIR}/{self.name}.xlsx', engine='xlsxwriter')
+                    writer = pd.ExcelWriter(f'{BASE_DIR}/media/{self.name}.xlsx', engine='xlsxwriter')
 
                     df.to_excel(writer, sheet_name='Page1')
 
@@ -84,7 +84,10 @@ class Scraper:
                         col_idx = df.columns.get_loc(column)
                         writer.sheets['Page1'].set_column(col_idx, col_idx, column_length)
                     writer.save()
-                    with open(f'{BASE_DIR}/{self.name}.xlsx', 'rb') as f:
+                    with open(f'{BASE_DIR}/media/{self.name}.xlsx', 'rb') as f:
                         bot.send_document(self.id, f)
-                    self.driver.quit()    
-                    break
+                except:
+                    bot.send_message(self.id, "Something Wrong! Is Link is correct?")
+                self.driver.quit()  
+                break
+
