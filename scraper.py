@@ -72,6 +72,7 @@ class Scraper:
                 page += 1
                 
             else:
+                try:
                     df = pd.DataFrame({'Название заведения': name, 'Юридическое название,': licen_name,'Контактные номера': contacts, 'Адрес': addresses, "Режим работы": work_hours})
 
                     writer = pd.ExcelWriter(f'{BASE_DIR}/{self.name}.xlsx', engine='xlsxwriter')
@@ -85,6 +86,8 @@ class Scraper:
                     writer.save()
                     with open(f'{BASE_DIR}/{self.name}.xlsx', 'rb') as f:
                         bot.send_document(self.id, f)
-                    self.driver.quit()  
-                    break
+                except:
+                    bot.send_message(self.id, "Something wrong is url correct?")
+                self.driver.quit()  
+                break
 
