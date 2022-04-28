@@ -1,18 +1,25 @@
+from config import bot
 from scraper import Scraper
 
+@bot.message_handler(commands=['start'])
+def on_start(message): 
+    bot.send_message(message.chat.id, "Send command /scrape to start Scrape")
 
-uri_dict = {
-    'Cafe in Tashkent': 'https://www.goldenpages.uz/rubrics/?Id=3478',
-    'Pools in Tashkent':'https://www.goldenpages.uz/rubrics/?Id=1039',
-    'Restaurants in Tashkent':'https://www.goldenpages.uz/rubrics/?Id=3473',
-    'Fast Food in Tashkent':'https://www.goldenpages.uz/rubrics/?Id=3742',
-    'Entertainment centers in Tashkent': 'https://www.goldenpages.uz/rubrics/?Id=3770',
-    'Bars in Tashkent':'https://www.goldenpages.uz/rubrics/?Id=3776',
-    'Shopping and entertainment centers, complexes in Tashkent':'https://www.goldenpages.uz/rubrics/?Id=101709'
-    }
+@bot.message_handler(commands=["scrape"])
+def on_uri_specified(message):
+    bot.send_message(message.chat.id, "Send  goldenpages category link to start scrape")
+    bot.register_next_step_handler(message, on_name_specified)
 
-for name, uri in uri_dict.items():
+def on_name_specified(message):
+    bot.send_message(message.chat.id, "Send name for excel file")
+    uri = message.text
+    bot.register_next_step_handler(message, on_start_scrape_specified, uri)
 
-    scraper = Scraper(uri=uri, name=name)
-
+def on_start_scrape_specified(message, uri):
+    bot.send_message(message.chat.id, "Starting Scrape")
+    name = message.text
+    scraper = Scraper(uri=uri, name=name, chat_id=message.chat.id)
     scraper.get_data()
+
+if __name__ == '__main__':
+    bot.infinity_polling()
